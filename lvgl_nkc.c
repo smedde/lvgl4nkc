@@ -85,14 +85,14 @@ int main(int argc, char* argv[]) {
     //lv_label_set_text(label, "Hello LVGL");
     //lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 
-    while (1) {
+    while (tick < 1e5) {
 
-        DISABLE_CPU_INTERRUPTS;
         if ((tick % 10) == 0) {
+            DISABLE_CPU_INTERRUPTS;
             printf("%s %i\n", "ticks:", tick);
+            ENABLE_CPU_INTERRUPTS; 
         }
-        ENABLE_CPU_INTERRUPTS;
-
+        
         lv_timer_handler();   /* must be called periodically */
     }
 
