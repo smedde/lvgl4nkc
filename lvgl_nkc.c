@@ -1,10 +1,17 @@
 #include <stdio.h>
+#include <string.h>
 #include "../../nkc_common/nkc/nkc.h"	
 #include "../../m68k-elf/include/sys/m68k.h"
 
 #include "./lvgl/lvgl.h"
 
-#define FB_ADDR   ((uint8_t *)0x80000)
+//#include "C:/src/NKC-SMEDLIBS-master/NKC_UTIL.h"
+//#include "C:/src/NKC-SMEDLIBS-master/NKC_GDP64.h"
+
+#define GDP_MEM_PAGE0 0x800000
+#define GDP_MEM_PAGE1 0x840000
+#define GDP_MEM_PAGE2 0x880000
+#define GDP_MEM_PAGE3 0x8C0000
 
 #define LV_HOR_RES_MAX   512
 #define LV_VER_RES_MAX   256
@@ -17,8 +24,6 @@ void doTick() {
 }
 
 void hardware_init() {
-
-    ENABLE_CPU_INTERRUPTS;
     gp_clearscreen();  //set video memory to black for all 4 pages
     _clock(&doTick);
 }
@@ -27,23 +32,19 @@ void my_disp_flush(lv_display_t *disp,
                    const lv_area_t *area,
                    uint8_t *px_map)
 {
-    
-    printf("%s\n", "disp_flush");
+    //printf("%s\n", "disp_flush"); //for debug
 
     /* Copy px_map to your framebuffer here */
-
-    /* Example for linear framebuffer (pseudo-code):
-       for(y=area->y1; y<=area->y2; y++)
-         memcpy(fb + y*XRES + area->x1,
-                px_map,
-                (area->x2-area->x1+1));
-    */
+    for (int y=area->y1; y<=area->y2; y++) {
+         memcpy((void*)GDP_MEM_PAGE0 + y*LV_HOR_RES_MAX + area->x1, px_map, (area->x2-area->x1+1));
+    }
 
     lv_display_flush_ready(disp);
 }
 
 int main(int argc, char* argv[]) {
 
+    DISABLE_CPU_INTERRUPTS;
     hardware_init();
 
     /* --------- Display buffer --------- */
@@ -51,22 +52,15 @@ int main(int argc, char* argv[]) {
     static lv_display_t *disp;
 
     printf("%s\n", "Hello from LVGL...");
-
-    //to do
-    printf("%s %p\n", "GDP video memory at : ", (void*) 0);
-    printf("%s %p\n", "LVGL frame buffer at: ", (void*) 0);
-    printf("%s %p\n", "LVGL heap at: ",         (void*) 0);
-    printf("%s %p\n", "LVGL heap size: ",       (void*) 0);
-
-    //lv_port_disp_init();  //needed ?
-
-    printf("%s\n", "do lv_init...");
+    printf("%s %p\n", "GDP video memory at : ", (void*) GDP_MEM_PAGE0);
+    printf("%s %p\n", "LVGL frame buffer at: ", (void*) &buf1);
+    
+    printf("%s\n", "do lv_init()...");
     lv_init();
 
-    printf("%s\n", "do lv__display_create...");
+    printf("%s\n", "do lv_display_create()...");
     disp = lv_display_create(LV_HOR_RES_MAX, LV_VER_RES_MAX);
-    printf("%s %p\n", "disp: ",       (void*) disp);
-
+    printf("%s %p\n", "display created: ",       (void*) disp);
 
     lv_display_set_flush_cb(disp, my_disp_flush);
 
@@ -79,13 +73,16 @@ int main(int argc, char* argv[]) {
     );
 
     /* Create UI */
-    //lv_obj_t *label = lv_label_create(lv_scr_act());
-    //lv_label_set_text(label, "Hello LVGL");
-    //lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    printf("%s\n", "Create UI ...");
+    lv_obj_t *label = lv_label_create(lv_scr_act());
+    lv_label_set_text(label, "Hello LVGL");
+    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 
-    while (tick < 1e5) {
+    printf("%s\n", "do lvgl event loop...");
+    ENABLE_CPU_INTERRUPTS; 
+    while (tick < 1000) {
 
-        if ((tick % 10) == 0) {
+        if ((tick % 100) == 0) {
             DISABLE_CPU_INTERRUPTS;
             printf("%s %i\n", "ticks:", tick);
             ENABLE_CPU_INTERRUPTS; 
@@ -97,5 +94,4 @@ int main(int argc, char* argv[]) {
     printf("%s\n", "...bye !");
 
 	return 0;
-
 }

@@ -28,22 +28,20 @@ INSTALL=cp
 DEVC_PREFIX=m68k-elf-
 CC=$(DEVC_PREFIX)gcc
 AR=$(DEVC_PREFIX)ar
-#SIZE=$(DEVC_PREFIX)size
 OBJCOPY=$(DEVC_PREFIX)objcopy
 OBJDUMP=$(DEVC_PREFIX)objdump
 
 TARGET := lvgl.a
 gccdir = /c/SysGCC/m68k-elf/
-COMMON_DIR = $(gccdir)/nkc_common/
+COMMON_DIR = $(gccdir)nkc_common/  
 ISEARCH = -I. -Ilvgl -Ilvgl/src
 
 LIB = liblvgl.a
 
-CFLAGS= -Os -m68000 -std=gnu99 -DLV_CONF_INCLUDE_SIMPLE -Wall -Wno-unused-function -Wno-unused-variable -Wno-unused-but-set-variable -Wno-switch -fomit-frame-pointer -nostartfiles -fno-delete-null-pointer-checks -ffunction-sections -fdata-sections $(ISEARCH) 
+CFLAGS= -Os -m68000 -std=gnu99 -DCPU=2 -Wall -Wno-unused-function -Wno-unused-variable -Wno-unused-but-set-variable -Wno-switch -fomit-frame-pointer -nostartfiles -fno-delete-null-pointer-checks -ffunction-sections -fdata-sections $(ISEARCH) 
 
 LVGL_SRCS := $(shell find ./src -name '*.c')
 LVGL_OBJS := $(LVGL_SRCS:.c=.o)
-
 
 # =========================
 # Build rules
@@ -57,7 +55,7 @@ src/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(LVGL_OBJS) $(LIB)
+	rm $(LVGL_OBJS) $(LIB)
 
 install: $(LIB)
 	$(INSTALL) $(LIB) $(COMMON_DIR)

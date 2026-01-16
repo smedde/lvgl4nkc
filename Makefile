@@ -37,12 +37,12 @@ OBJDUMP=$(DEVC_PREFIX)objdump
 TARGET := lvgl_nkc
 gccdir = /c/SysGCC/m68k-elf
 COMMON_DIR = $(gccdir)/nkc_common/
-ISEARCH = -I. -I$(COMMON_DIR)/nkc 
+ISEARCH = -I. -I$(COMMON_DIR)
 
-LIBDIRS =  -L$(gccdir)/m68k-elf/lib/m68000 #-L/c/src/LVGLNKC/lvgl
+LIBDIRS =  -L$(COMMON_DIR) #-L/c/src/LVGLNKC/lvgl
 LIBS =  -llvgl
 
-CFLAGS= -Os -m68000 -Wall -Wno-unused-variable -Wno-unused-but-set-variable -Wno-switch -fomit-frame-pointer -nostartfiles -std=gnu99 -ffunction-sections -fdata-sections -Dndrcomp -DUSE_JADOS $(ISEARCH)
+CFLAGS= -Os -m68000 -Wall -DCPU=2 -Wno-unused-variable -Wno-unused-but-set-variable -Wno-switch -fomit-frame-pointer -nostartfiles -std=gnu99 -ffunction-sections -fdata-sections -Dndrcomp -DUSE_JADOS $(ISEARCH)
 
 ASFLAGS= #-DM68000
 
@@ -52,8 +52,6 @@ LDLIBS= -llvgl
 
 # List of C sources
 CSRCS=  lvgl_nkc.c
-
-#ASM_SRCS= crt0_old.s
 
 # Directory where the files are generated to (objects, list files, ...)
 OUTDIR=./_out/
@@ -114,7 +112,7 @@ transfer:
 	netsh wlan connect name="TP-Link_Extender"
 
 # send file to NKC
-	tftp -i 192.168.0.100 PUT _out/lvgl_nkc.68k
+	tftp -i 192.168.0.101 PUT _out/lvgl_nkc.68k
 
 # switch WiFi back
 	netsh wlan disconnect
