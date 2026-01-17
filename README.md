@@ -5,7 +5,7 @@ LVGL Grafikbibliothek adaptiert für den 68k NKC auf FPGA-GDP Basis ("TangNano N
    make            
    make install
 
-3) im Verzeichnis ..lvgl4nkc
+3) im Verzeichnis ..\lvgl4nkc
    
    make
 
