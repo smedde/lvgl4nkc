@@ -1,4 +1,4 @@
-LVGL Grafikbibliothek adaptiert für den 68k NKC mit FPGA-GDP ("TangNano NKC", "SOC NKC") 
+LVGL Grafikbibliothek adaptiert für den 68k NKC auf FPGA-GDP Basis ("TangNano NKC", "SOC NKC") 
 
 1) im Verzeichnis ..\lvgl4nkc\lvgl
    
